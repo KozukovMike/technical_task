@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Table Example</title>
+</head>
+<body>
+    <table class="currencyTable">
+        <tr>
+            <th>Наименование иностранной валюты</th>
+            <th>Количество единиц иностранной валюты</th>
+            <th>Официальный курс</th>
+        </tr>
+        {% for item in items %}
+        <tr>
+                <td>{{ item.Cur_Name }}</td>
+                <td>{{ item.Cur_Scale }}</td>
+                <td>{{ item.Cur_Offrate }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

@@ -1,0 +1,15 @@
+/* Стили для таблицы */
+.currencyTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.currencyTable th, .currencyTable td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+}
+
+.currencyTable th {
+    background-color: #f2f2f2;
+}
