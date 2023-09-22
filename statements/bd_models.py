@@ -2,6 +2,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy import Column, Integer, \
     VARCHAR, ForeignKey, create_engine, DATETIME, Text, String, Date, Float
+from sqlalchemy.orm import relationship
 from db.CRUD.settings import DATABASE_URL
 
 
@@ -14,6 +15,24 @@ class User(Base):
     user_id = Column(Integer, primary_key=True)
     username = Column(VARCHAR(255), nullable=False, unique=True)
     password_hash = Column(VARCHAR(255), nullable=False)
+
+
+class Role(Base):
+    __tablename__ = 'roles'
+
+    role_id = Column(Integer, primary_key=True)
+    name = Column(String(50), unique=True, nullable=False)
+
+
+class UserRoleAssociation(Base):
+    __tablename__ = 'user_role_association'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.user_id'))
+    role_id = Column(Integer, ForeignKey('roles.role_id'))
+
+    # user = relationship('User', back_populates='roles')
+    # role = relationship('Role', back_populates='users')
 
 
 class Currency(Base):

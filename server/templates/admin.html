@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Страница администратора</title>
+</head>
+<body>
+    <h1>Страница администратора</h1>
+
+    <h2>Назначить роль админа</h2>
+    <form method="post" action="/assign_admin_role">
+        <label for="username">Имя пользователя:</label>
+        <input type="text" id="username" name="username">
+        <input type="submit" value="Назначить роль админа">
+    </form>
+
+    <h2>Удалить пользователя</h2>
+    <form method="post" action="/delete_user">
+        <label for="user_id">Имя пользователя:</label>
+        <input type="text" id="user_id" name="user_id">
+        <input type="submit" value="Удалить пользователя">
+    </form>
+</body>
+</html>
