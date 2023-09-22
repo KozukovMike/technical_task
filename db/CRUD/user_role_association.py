@@ -79,6 +79,15 @@ class CRUDUserRoleAssociation:
 
     @staticmethod
     @create_session
+    def delete_by_user_id(instance_id, session=None):
+        session.execute(
+            delete(UserRoleAssociation)
+            .where(UserRoleAssociation.user_id == instance_id)
+        )
+        session.commit()
+
+    @staticmethod
+    @create_session
     def delete_all(session=None):
         session.execute(delete(UserRoleAssociation))
         session.commit()

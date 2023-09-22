@@ -8,16 +8,34 @@
 
     <h2>Назначить роль админа</h2>
     <form method="post" action="/assign_admin_role">
-        <label for="username">Имя пользователя:</label>
-        <input type="text" id="username" name="username">
+        <label for="username_admin">Имя пользователя:</label>
+        <input type="text" id="username_admin" name="username_admin">
         <input type="submit" value="Назначить роль админа">
+    </form>
+
+    <h2>Назначить роль менеджера</h2>
+    <form method="post" action="/assign_manager_role">
+        <label for="username_manager">Имя пользователя:</label>
+        <input type="text" id="username_manager" name="username_manager">
+        <input type="submit" value="Назначить роль менеджера">
     </form>
 
     <h2>Удалить пользователя</h2>
     <form method="post" action="/delete_user">
-        <label for="user_id">Имя пользователя:</label>
-        <input type="text" id="user_id" name="user_id">
+        <label for="username_delete">Имя пользователя:</label>
+        <input type="text" id="username_delete" name="username_delete">
         <input type="submit" value="Удалить пользователя">
     </form>
+
+    <h2>Перейти на страницу менеджера</h2>
+    <form method="post" action="/manager">
+        <input type="submit" value="Перейти на страницу менеджера">
+    </form>
+
+    <h2>Перейти на страницу таблицы</h2>
+    <form method="post" action="/table">
+        <input type="submit" value="Перейти на страницу таблицы">
+    </form>
+
 </body>
 </html>

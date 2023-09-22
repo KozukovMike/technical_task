@@ -22,6 +22,7 @@ scheduler = BackgroundScheduler()
 templates = Jinja2Templates(directory='templates')
 
 list_of_instances = []
+country_names = []
 
 
 # def hash_pass(password: str) -> str:
@@ -43,14 +44,26 @@ def create_admin() -> None:
         role_id=1,
     )
     CRUDUserRoleAssociation.add(instance=ura)
+    user = User(
+        username="manager",
+        password_hash=''
+    )
+    CRUDUser.add(instance=user)
+    user_id = CRUDUser.get_by_username(instance='manager').user_id
+    ura = UserRoleAssociation(
+        user_id=user_id,
+        role_id=2,
+    )
+    CRUDUserRoleAssociation.add(instance=ura)
 
 def read_from_db():
-    global list_of_instances
+    global list_of_instances, country_names
     # нужно раскоментить при первом запуске
     # CRUDCurrency.delete_all()
     # ParsNBRB.pars_with_offrate()
     list_of_instances = PostgresClient.from_bd(table_name='currencies')
-
+    country_names = [i['Cur_Name'] for i in list_of_instances]
+    print(country_names)
 
 @app.on_event("startup")
 def start_scheduler():
@@ -68,17 +81,15 @@ def shutdown_scheduler():
 def ping():
     return 'pong'
 #
-@app.post("/table")
+@app.post("/table", response_class=HTMLResponse)
 def show_table(request: Request):
     try:
-        global list_of_instances
-        return templates.TemplateResponse("table.html", {"request": request, "items": list_of_instances})
+        global list_of_instances, country_names
+        print(country_names)
+        new_list_of_instances = [i for i in list_of_instances if i['Cur_Name'] in country_names]
+        return templates.TemplateResponse("table.html", {"request": request, "items": new_list_of_instances})
     except Exception as e:
         return {"error": str(e)}
-
-@app.get('/table')
-def show_table(request: Request):
-    return {'message': 'dd'}
 
 
 @app.get("/")
@@ -91,7 +102,6 @@ async def process_login(username: str = Form(...), password: str = Form(None)):
 
     user = CRUDUser.get_by_username(instance=username)
 
-    print(user)
     if user is None:
         salt = bcrypt.gensalt()
         entered_password = password.encode('utf-8')
@@ -111,7 +121,10 @@ async def process_login(username: str = Form(...), password: str = Form(None)):
 
     if role_id == 1:
         return RedirectResponse(url="/admin_page")
-
+    elif role_id == 2:
+        return RedirectResponse(url="/manager")
+    if password is None:
+        return {"message": "Укажите пароль"}
     entered_password = password.encode('utf-8')
     if bcrypt.checkpw(entered_password, user.password_hash.encode('utf-8')):
         return RedirectResponse(url="/table")
@@ -130,11 +143,37 @@ async def admin_page(request: Request,
 @app.post("/assign_admin_role", response_class=HTMLResponse)
 async def assign_admin_role(request: Request,
                             username_admin: str = Form(None)):
-    print(username_admin)
+    user_id = CRUDUser.get_by_username(instance=username_admin).user_id
+    CRUDUserRoleAssociation.add(instance=UserRoleAssociation(user_id=user_id, role_id=1))
+    role_id = CRUDUserRoleAssociation.get_by_user_id(instance_id=user_id).role_id
     return templates.TemplateResponse("admin_result.html", {"request": request, "username": username_admin})
 
 @app.post("/delete_user", response_class=HTMLResponse)
 async def delete_user(request: Request,
                       username_delete: str = Form(None)):
-    print(username_delete)
+    user_id = CRUDUser.get_by_username(instance=username_delete).user_id
+    CRUDUserRoleAssociation.delete_by_user_id(instance_id=user_id)
+    CRUDUser.delete_by_id(instance_id=user_id)
     return templates.TemplateResponse("admin_result.html", {"request": request, "username": username_delete})
+
+@app.post("/manager", response_class=HTMLResponse)
+async def manager(request: Request, selected_countries: list = Form([])):
+    try:
+        global list_of_instances
+        print(selected_countries)
+        return templates.TemplateResponse("manager.html", {"request": request, "items": list_of_instances, "selected_countries": selected_countries})
+    except Exception as e:
+        return {"error": str(e)}
+
+@app.post("/assign_manager_role", response_class=HTMLResponse)
+async def assign_manager_role(request: Request, username_manager: str = Form(None)):
+    user_id = CRUDUser.get_by_username(instance=username_manager).user_id
+    CRUDUserRoleAssociation.add(instance=UserRoleAssociation(user_id=user_id, role_id=2))
+    role_id = CRUDUserRoleAssociation.get_by_user_id(instance_id=user_id).role_id
+    return templates.TemplateResponse("admin_result.html", {"request": request, "username": username_manager})
+
+@app.post("/manager/show_selected")
+async def show_selected(request: Request, selected_countries: list = Form([])):
+    global country_names
+    country_names = selected_countries
+    return templates.TemplateResponse("manager_result.html", {"request": request})

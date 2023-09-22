@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Table Example</title>
+</head>
+<body>
+    <form method="post" action="/manager/show_selected">
+        <table class="currencyTable">
+            <tr>
+                <th>Наименование иностранной валюты</th>
+                <th>Количество единиц иностранной валюты</th>
+                <th>Официальный курс</th>
+                <th>Показать</th> <!-- Заголовок для чекбоксов -->
+            </tr>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.Cur_Name }}</td>
+                <td>{{ item.Cur_Scale }}</td>
+                <td>{{ item.Cur_Offrate }}</td>
+                <td>
+                    <input type="checkbox" name="selected_countries" value="{{ item.Cur_Name }}">
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <input type="submit" value="Показать выбранные">
+    </form>
+</body>
+</html>

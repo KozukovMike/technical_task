@@ -74,3 +74,12 @@ class CRUDUser:
             .where(User.user_id == instance_id)
         )
         session.commit()
+
+    @staticmethod
+    @create_session
+    def delete_by_id(instance_id, session=None):
+        session.execute(
+            delete(User)
+            .where(User.user_id == instance_id)
+        )
+        session.commit()
